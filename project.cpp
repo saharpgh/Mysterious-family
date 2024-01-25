@@ -68,7 +68,7 @@ private:
     }
 
     // Function to check if two individuals are parent and child in the family tree
-    bool areParentAndChild(const string &parentName, const string &childName)
+    bool areParentAndChild(string parentName, string childName)
     {
         string parentHash = sha256(parentName);
         string childHash = sha256(childName);
@@ -86,7 +86,7 @@ private:
         return false; 
     }
 
-    string findKey(const string& targetValue)
+    string findKey(string targetValue)
     {
         for (auto it = familyJson.begin(); it != familyJson.end(); ++it)
         {
@@ -103,7 +103,7 @@ private:
     }
 
     // Function to check if two individuals are siblings in the family tree
-    bool areSiblings(const string &name1, const string &name2)
+    bool areSiblings(string name1, string name2)
     {
         string hash1 = sha256(name1);
         string hash2 = sha256(name2);
@@ -124,48 +124,27 @@ private:
     // Explanation: DFS is used to explore the family tree and find the common ancestors.
     // The function starts DFS from both individuals to find their ancestors
     // and then identifies the common ancestor by finding the intersection of the ancestor sets.
-    string findCommonAncestor(string name1, string name2)
-    {
-        string hash1 = sha256(name1);
-        string hash2 = sha256(name2);
-
-        string currentHash1 = hash1;
-        string currentHash2 = hash2;
-
-        while (currentHash1 != currentHash2)
-        {
-            string key1 = findKey(currentHash1);
-            string key2 = findKey(currentHash2);
-
-            
-
-            if (key1 == key2) {
-                return key1;
-            }
-
-            currentHash1 = key1;
-            currentHash2 = key2;
-        }
-
-        return "No common ancestor found.";
-    }
+    
     // Function to find the common ancestor of two individuals
 
 
     // Function to find the farthest descendant of an individual in the family tree
-    int findFarthestDescendant(const string &name)
+    int findFarthestDescendant(string name)
     {
          string hash = sha256(name);
 
         int maxDistance = 0;
 
         // Perform depth-first search to find the farthest descendant
-        function<void(const string&, int)> dfs = [&](const string &currentHash, int distance) {
-            if (distance > maxDistance) {
+        function<void(const string&, int)> dfs = [&](const string &currentHash, int distance)
+        {
+            if (distance > maxDistance)
+            {
                 maxDistance = distance;
             }
 
-            for (const auto &child : familyJson[currentHash]) {
+            for (const auto &child : familyJson[currentHash]) 
+            {
                 dfs(child, distance + 1);
             }
         };
@@ -174,6 +153,29 @@ private:
         dfs(hash, 0);
 
         return maxDistance;
+    }
+
+    string LCA(string node1, string node2){
+
+        string hashed1 = sha256(node1);
+        string hashed2 = sha256(node2);
+
+        vector<string> visited;
+
+        while(hashed1 != ""){
+            visited.push_back(hashed1);
+            hashed1 = findKey(hashed1);
+        }
+
+        while(hashed2 != ""){
+            if(count(visited.begin(), visited.end(), hashed2) > 0){
+                return hashed2;
+            }
+            hashed2 = findKey(hashed2);
+        }
+
+        return "";
+
     }
     
     // Function to find the farthest relationship in the family tree
@@ -306,10 +308,8 @@ private:
                     cin >> name1;
                     cout << "Enter the second individual's name: ";
                     cin >> name2;
-
-                    string commonAncestor = findCommonAncestor(name1, name2);
-                    cout << "Common Ancestor: " << commonAncestor << endl;
-
+                    
+                    cout << "Lowest Common Ancestor: " << LCA(name1, name2) << endl;
                     break;
                 }
 
@@ -327,11 +327,12 @@ private:
 
                 case 7:
                 {
-                    pair<string, string> farthestRelationship = findFarthestRelationship();
-                    cout << "Farthest Relationship: " << farthestRelationship.first
-                        << " and " << farthestRelationship.second << endl;
-
-                    break;
+                        string person1, person2;
+                        cout << "Enter person 1 : ";
+                        cin >> person1;
+                        cout << "Enter person 2 : ";
+                        cin >> person2;
+                        
                 }
 
                 case 8:
