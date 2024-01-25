@@ -1,0 +1,83 @@
+Family Tree Program Design
+
+Introduction
+The Family Tree Program is designed to manage relationships within a family tree using efficient data structures and algorithms. This document outlines the algorithms used for each operation and the rationale behind choosing the SHA-256 hashing algorithm.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Hashing Algorithm Choice: SHA-256
+Algorithm: SHA-256 (Secure Hash Algorithm 256-bit)
+Why SHA-256?
+
+The choice of SHA-256 over other hashing algorithms (MD5, SHA-1, SHA-2, NTLM, and LANMAN) is primarily based on its robustness and security. SHA-256 provides a 256-bit hash, making it computationally infeasible to generate the same hash from different inputs. Additionally, SHA-256 is resistant to collision attacks, ensuring a low probability of two different inputs producing the same hash.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Family Tree Operations
+Case 1: Adding a Child
+Algorithm: Direct Hash Table Manipulation
+
+Justification:
+
+Why: This operation involves directly manipulating the hash table representing the family tree. Utilizing the underlying hash table functionality ensures an efficient addition.
+Efficiency: O(1) time complexity for inserting into the hash table.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 2: Deleting a Child
+Algorithm: Hash Table Manipulation with Linear Search
+
+Justification:
+
+Why: Deletion requires finding and removing the child from the hash table and updating other parent-child relationships. A linear search through the hash table is employed to locate the child.
+Efficiency: O(N) time complexity where N is the number of elements in the family tree.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 3: Checking Parent-Child Relationship
+Algorithm: Linear Search in Child Array
+
+Justification:
+
+Why: Checking if two individuals have a parent-child relationship involves searching through the array of children associated with the parent.
+Efficiency: O(K) time complexity, where K is the number of children for the specified parent.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 4: Checking Sibling Relationship
+Algorithm: Hash Table Lookup
+
+Justification:
+
+Why: Checking if two individuals are siblings requires a hash table lookup to find the keys associated with their names.
+Efficiency: O(1) time complexity with direct hash table access.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 5: Finding Common Ancestor
+Algorithm: Ancestor Traversal
+
+Justification:
+
+Why: Finding the common ancestor involves traversing the family tree upwards from the given individuals until a common ancestor is found.
+Efficiency: O(N) time complexity in the worst case, where N is the depth of the family tree.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 6: Finding Farthest Descendant
+Algorithm: Depth-First Search (DFS)
+
+Justification:
+
+Why: To find the farthest descendant of an individual, a depth-first search (DFS) is performed, exploring each path in the family tree.
+Efficiency: O(N) time complexity in the worst case, where N is the number of descendants in the family tree.
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################
+
+Case 7: Finding Farthest Relationship (Not Implemented)
+Algorithm: Not Implemented
+
+Justification:
+
+Why: 
+
