@@ -67,10 +67,7 @@ private:
         }
     }
 
-
     // Function to check if two individuals are parent and child in the family tree
-    // Algorithm: Linear Search
-    // Explanation: Linear search is used to check if one individual is listed as a child of another individual.
     bool areParentAndChild(const string &parentName, const string &childName)
     {
         string parentHash = sha256(parentName);
@@ -82,17 +79,13 @@ private:
             for (const auto &child : children)
             {
                 if (child == childHash) {
-                    return true; // Parent and child relationship found
+                    return true; 
                 }
             }
         }
-        return false; // No parent and child relationship found
+        return false; 
     }
 
-    // Function to check if two individuals are siblings in the family tree
-    // Algorithm: Set Intersection
-    // Explanation: Set intersection is used to find common children of two parents and determine if they are siblings.
-    // Function to find the key associated with a specific value in the family tree JSON
     string findKey(const string& targetValue)
     {
         for (auto it = familyJson.begin(); it != familyJson.end(); ++it)
@@ -115,15 +108,11 @@ private:
         string hash1 = sha256(name1);
         string hash2 = sha256(name2);
 
-        if (familyJson.contains(hash1) && familyJson.contains(hash2))
-        {
-            // Find keys associated with name1 and name2
-            string key1 = findKey(hash1);
-            string key2 = findKey(hash2);
-
-            // Check if the keys are the same
-            return key1 == key2;
-        }
+        // Find keys associated with name1 and name2
+        string key1 = findKey(hash1);
+        string key2 = findKey(hash2);
+        // Check if the keys are the same
+        return key1 == key2;
 
         return false;  // One or both individuals not found in the family tree
     }
@@ -162,31 +151,18 @@ private:
     }
     // Function to find the common ancestor of two individuals
 
-    
-
 
     // Function to find the farthest descendant of an individual in the family tree
-    // Algorithm: Depth-First Search (DFS)
-    // Explanation: DFS is employed to traverse the family tree and find the farthest descendant of an individual.
-    // The function keeps track of the maximum distance and the corresponding farthest descendant during the traversal.
-    string findFarthestDescendant(const string &name)
+    int findFarthestDescendant(const string &name)
     {
-        string hash = sha256(name);
-
-        if (!familyJson.contains(hash))
-        {
-            return "Individual not found in the family tree.";
-        }
+         string hash = sha256(name);
 
         int maxDistance = 0;
-        string farthestDescendant;
 
         // Perform depth-first search to find the farthest descendant
-        function<void(const string&, int)> dfs = [&](const string &currentHash, int distance)
-        {
+        function<void(const string&, int)> dfs = [&](const string &currentHash, int distance) {
             if (distance > maxDistance) {
                 maxDistance = distance;
-                farthestDescendant = currentHash;
             }
 
             for (const auto &child : familyJson[currentHash]) {
@@ -197,7 +173,7 @@ private:
         // Start DFS from the given individual
         dfs(hash, 0);
 
-        return farthestDescendant;
+        return maxDistance;
     }
     
     // Function to find the farthest relationship in the family tree
@@ -343,7 +319,7 @@ private:
                     cout << "Enter the individual's name: ";
                     cin >> individual;
 
-                    string farthestDescendant = findFarthestDescendant(individual);
+                    int farthestDescendant = findFarthestDescendant(individual);
                     cout << "Farthest Descendant: " << farthestDescendant << endl;
 
                     break;
