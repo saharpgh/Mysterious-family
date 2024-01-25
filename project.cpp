@@ -5,6 +5,7 @@
 #include <set>
 #include <iterator>
 #include "hash.cpp"
+#include <unordered_set>
 
 
 
@@ -134,27 +135,20 @@ private:
     // Explanation: DFS is used to explore the family tree and find the common ancestors.
     // The function starts DFS from both individuals to find their ancestors
     // and then identifies the common ancestor by finding the intersection of the ancestor sets.
-    string findCommonAncestor(const string &name1, const string &name2)
+    string findCommonAncestor(string name1, string name2)
     {
         string hash1 = sha256(name1);
         string hash2 = sha256(name2);
 
-        if (!familyJson.contains(hash1) || !familyJson.contains(hash2))
-        {
-            return "Individual not found in the family tree.";
-        }
-
         string currentHash1 = hash1;
         string currentHash2 = hash2;
 
-        while (familyJson.contains(currentHash1) && familyJson.contains(currentHash2))
+        while (currentHash1 != currentHash2)
         {
             string key1 = findKey(currentHash1);
             string key2 = findKey(currentHash2);
 
-            if (key1.empty() || key2.empty()) {
-                return "Error finding keys in the family tree.";
-            }
+            
 
             if (key1 == key2) {
                 return key1;
@@ -166,8 +160,9 @@ private:
 
         return "No common ancestor found.";
     }
+    // Function to find the common ancestor of two individuals
 
-
+    
 
 
     // Function to find the farthest descendant of an individual in the family tree
