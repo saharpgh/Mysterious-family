@@ -119,31 +119,29 @@ private:
     }
 
     // Function to find the common ancestor of two individuals in the family tree
-    string findCommonAncestor(string name1, string name2)
-    {
-        string hash1 = sha256(name1);
-        string hash2 = sha256(name2);
+    string LCA(string node1, string node2){
 
-        string currentHash1 = hash1;
-        string currentHash2 = hash2;
+        string hashed1 = sha256(node1);
+        string hashed2 = sha256(node2);
 
-        while (currentHash1 != currentHash2)
-        {
-            string key1 = findKey(currentHash1);
-            string key2 = findKey(currentHash2);
+        vector<string> visited;
 
-            
-
-            if (key1 == key2) {
-                return key1;
-            }
-
-            currentHash1 = key1;
-            currentHash2 = key2;
+        while(hashed1 != ""){
+            visited.push_back(hashed1);
+            hashed1 = findKey(hashed1);
         }
 
-        return "No common ancestor found.";
+        while(hashed2 != ""){
+            if(count(visited.begin(), visited.end(), hashed2) > 0){
+                return hashed2;
+            }
+            hashed2 = findKey(hashed2);
+        }
+
+        return "";
+
     }
+
 
     int findFarthestDescendant(const string& name)
     {
