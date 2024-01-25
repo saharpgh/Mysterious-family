@@ -6,6 +6,7 @@
 #include <iterator>
 #include "hash.cpp"
 #include <unordered_set>
+#include <algorithm> 
 
 
 
@@ -117,35 +118,53 @@ private:
         return false;  // One or both individuals not found in the family tree
     }
 
-
-
     // Function to find the common ancestor of two individuals in the family tree
-    // Algorithm: Depth-First Search (DFS)
-    // Explanation: DFS is used to explore the family tree and find the common ancestors.
-    // The function starts DFS from both individuals to find their ancestors
-    // and then identifies the common ancestor by finding the intersection of the ancestor sets.
-    
-    // Function to find the common ancestor of two individuals
-
-
-    // Function to find the farthest descendant of an individual in the family tree
-    int findFarthestDescendant(string name)
+    string findCommonAncestor(string name1, string name2)
     {
-         string hash = sha256(name);
+        string hash1 = sha256(name1);
+        string hash2 = sha256(name2);
+
+        string currentHash1 = hash1;
+        string currentHash2 = hash2;
+
+        while (currentHash1 != currentHash2)
+        {
+            string key1 = findKey(currentHash1);
+            string key2 = findKey(currentHash2);
+
+            
+
+            if (key1 == key2) {
+                return key1;
+            }
+
+            currentHash1 = key1;
+            currentHash2 = key2;
+        }
+
+        return "No common ancestor found.";
+    }
+
+    int findFarthestDescendant(const string& name)
+    {
+        string hash = sha256(name);
 
         int maxDistance = 0;
 
         // Perform depth-first search to find the farthest descendant
-        function<void(const string&, int)> dfs = [&](const string &currentHash, int distance)
-        {
-            if (distance > maxDistance)
-            {
+        unordered_map<string, int> distanceMap;
+
+        function<void(const string&, int)> dfs = [&](const string& currentHash, int distance) {
+            if (distance > maxDistance) {
                 maxDistance = distance;
             }
 
-            for (const auto &child : familyJson[currentHash]) 
-            {
-                dfs(child, distance + 1);
+            distanceMap[currentHash] = distance;
+
+            for (const auto& child : familyJson[currentHash]) {
+                if (distanceMap.find(child) == distanceMap.end()) {
+                    dfs(child, distance + 1);
+                }
             }
         };
 
@@ -155,68 +174,6 @@ private:
         return maxDistance;
     }
 
-    string LCA(string node1, string node2){
-
-        string hashed1 = sha256(node1);
-        string hashed2 = sha256(node2);
-
-        vector<string> visited;
-
-        while(hashed1 != ""){
-            visited.push_back(hashed1);
-            hashed1 = findKey(hashed1);
-        }
-
-        while(hashed2 != ""){
-            if(count(visited.begin(), visited.end(), hashed2) > 0){
-                return hashed2;
-            }
-            hashed2 = findKey(hashed2);
-        }
-
-        return "";
-
-    }
-    
-    // Function to find the farthest relationship in the family tree
-    // Algorithm: Depth-First Search (DFS)
-    // Explanation: DFS is used to explore the family tree and find the farthest relationship between any two individuals.
-    // The function iterates over each individual, starting DFS from each one to find the farthest relationship.
-    pair<string, string> findFarthestRelationship()
-    {
-        string farthestIndividual1;
-        string farthestIndividual2;
-        int maxDistance = 0;
-
-        // Perform depth-first search to find the farthest relationship
-        function<void(const string&, const string&, int)> dfs = [&](const string &currentHash,
-                                                                    const string &individual,
-                                                                    int distance) {
-            if (distance > maxDistance)
-            {
-                maxDistance = distance;
-                farthestIndividual1 = individual;
-                farthestIndividual2 = currentHash;
-            }
-
-            for (const auto &child : familyJson[currentHash])
-            {
-                dfs(child, individual, distance + 1);
-            }
-        };
-
-        // Iterate over each individual in the family tree
-        for (const auto &entry : familyJson.items())
-        {
-            const string &currentHash = entry.key();
-            const string &individual = entry.value().at(0); // Assuming one parent for simplicity
-
-            // Start DFS from each individual
-            dfs(currentHash, individual, 0);
-        }
-
-        return make_pair(farthestIndividual1, farthestIndividual2);
-    }
 
     void processUserInput()
     {
@@ -234,7 +191,7 @@ private:
             cout << "4. Check Sibling Relationship" << endl;
             cout << "5. Find Common Ancestor" << endl;
             cout << "6. Find Farthest Descendant" << endl;
-            cout << "7. Find Farthest Relationship" << endl;
+            cout << "7. Check Far Relationship" << endl;
             cout << "8. Find Farthest Kinship" << endl;  // Added new option
             cout << "9. Exit" << endl;  // Adjusted exit option
 
@@ -327,20 +284,32 @@ private:
 
                 case 7:
                 {
-                        string person1, person2;
-                        cout << "Enter person 1 : ";
-                        cin >> person1;
-                        cout << "Enter person 2 : ";
-                        cin >> person2;
-                        
+                    string person1, person2;
+                    cout << "Enter the first person's name: ";
+                    cin >> person1;
+                    cout << "Enter the second person's name: ";
+                    cin >> person2;
+
+                    if (!areSiblings(person1, person2) && !areParentAndChild(person1, person2) && !areParentAndChild(person2, person1))
+                    {
+                        cout << "They have a far relationship." << endl;
+                    }
+                    else
+                    {
+                        cout << "They are either siblings or in a parent-child relationship." << endl;
+                    }
+
+                    break;
                 }
 
                 case 8:
                 {
-                    pair<string, string> farthestRelationship = findFarthestRelationship();
-                    cout << "Farthest Relationship: " << farthestRelationship.first
-                        << " and " << farthestRelationship.second << endl;
-                    break;
+                    // pair<string, string> farthestKinship = findFarthestKinship();
+                    // if (!farthestKinship.first.empty() && !farthestKinship.second.empty()) {
+                    //     cout << "Farthest Kinship (Diameter): " << farthestKinship.first
+                    //         << " and " << farthestKinship.second << endl;
+                    // }
+                    // break;
                 }
 
                 case 9:
@@ -356,7 +325,7 @@ private:
         while (true);
     }
 
-
+    
 public:
     FamilyTree()
     {
@@ -385,26 +354,23 @@ public:
         cout << "Family data saved to 'family.json'." << endl;
     }
 
-    void addIndividual(const string& name, const string& parentName);
-
-
     void runProgram()
     {
         processUserInput();
     }
 
-    // void addIndividual(const string& name, const string& parentName)
-    // {
-    //     string hash = sha256(name);
+    void addIndividual(const string& name, const string& parentName)
+    {
+        string hash = sha256(name);
 
-    //     if (!familyJson.contains(hash)) {
-    //         familyJson[hash] = json::array();
-    //     }
+        if (!familyJson.contains(hash)) {
+            familyJson[hash] = json::array();
+        }
 
-    //     // Add the individual to the parent's children
-    //     string parentHash = sha256(parentName);
-    //     familyJson[parentHash].push_back(hash);
-    // }
+        // Add the individual to the parent's children
+        string parentHash = sha256(parentName);
+        familyJson[parentHash].push_back(hash);
+    }
 
 };
 
